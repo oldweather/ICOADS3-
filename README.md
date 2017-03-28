@@ -13,9 +13,9 @@ The scripts in this directory make all these corrections, producing an equivalen
 Master script is [runall.sh](runall.sh)
 
 Decks to replace are:
-1 ACRE expeditionary data: ICOADS3 deck 246, replacement data from  https://github.com/oldweather/Expeditions
-2 oldWeather 1/2 - RN WW1 obs: ICOADS3 deck 249, replacement data from https://github.com/oldweather/oldWeather1
-3 oldWeather 3 - US Arctic obs: ICOADS3 deck 710, replacement data from https://github.com/oldweather/oldWeather3
+1. ACRE expeditionary data: ICOADS3 deck 246, replacement data from  https://github.com/oldweather/Expeditions
+2. oldWeather 1/2 - RN WW1 obs: ICOADS3 deck 249, replacement data from https://github.com/oldweather/oldWeather1
+3. oldWeather 3 - US Arctic obs: ICOADS3 deck 710, replacement data from https://github.com/oldweather/oldWeather3
 
 Don't need to replace the EEIC data (deck 248), as it included no port observations.
 
