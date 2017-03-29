@@ -27,10 +27,10 @@ R --no-save < multibatch.cm.R
 # This submits jobs to SPICE - don't continue until they have all stopped
 sleep 60 # Might not be long enough
 
-# Make a full 1800-1950 dataset including the merged records
-for decade in `seq 180 194`
+# Make a full 1800-1925 dataset including the merged records
+for year in `seq 1800 1925`
 do
-  cp $SCRATCH/ICOADS3/IMMA/IMMA1_R3.0.0_$decade?-* $SCRATCH/ICOADS3+/merged.filled
+  cp $SCRATCH/ICOADS3/IMMA/IMMA1_R3.0.0_$year-* $SCRATCH/ICOADS3+/merged.filled
 done
 cp $SCRATCH/ICOADS3+/merged/* $SCRATCH/ICOADS3+/merged.filled
 
@@ -53,6 +53,6 @@ R --no-save < Estimate_correction_for_year+deck.R
 # Apply the bias estimates
 R --no-save < make_debiased_imma.R
 
-# Assemble the complete final dataset 1800-1950
+# Assemble the complete final dataset 1800-1925
 cp $SCRATCH/ICOADS3+/noon.assumptions/* $SCRATCH/ICOADS3+/final
 cp $SCRATCH/ICOADS3+/debiased/* $SCRATCH/ICOADS3+/final
