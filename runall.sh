@@ -17,18 +17,18 @@ mkdir $SCRATCH/ICOADS3+/final
 # Copy in the source directories for the replacement records
 mkdir $SCRATCH/ICOADS3+/replacements/oldWeather1
 cp -r $HOME/Projects/oldWeather1/imma/* $SCRATCH/ICOADS3+/replacements/oldWeather1
-mkdir $SCRATCH/ICOADS3+/replacements/oldWeather3
-cp -r $HOME/Projects/oldWeather3/imma/* $SCRATCH/ICOADS3+/replacements/oldWeather3
-mkdir $SCRATCH/ICOADS3+/replacements/Expeditions
-cp -r $HOME/Projects/Expeditions/imma/* $SCRATCH/ICOADS3+/replacements/Expeditions
 
 # Run the merge - month by month
 R --no-save < multibatch.cm.R
 # This submits jobs to SPICE - don't continue until they have all stopped
 sleep 60 # Might not be long enough
 
-# Make a full 1800-1925 dataset including the merged records
-for year in `seq 1800 1925`
+# Make a full 1800-1870 and 1905-1925 dataset including the merged records
+for year in `seq 1800 1870`
+do
+  cp $SCRATCH/ICOADS3/IMMA/IMMA1_R3.0.0_$year-* $SCRATCH/ICOADS3+/merged.filled
+done
+for year in `seq 1913 1925`
 do
   cp $SCRATCH/ICOADS3/IMMA/IMMA1_R3.0.0_$year-* $SCRATCH/ICOADS3+/merged.filled
 done
@@ -44,7 +44,7 @@ sleep 60 # Might not be long enough
 # Make the climatology comparisons
 R --no-save < multibatch.bc.R
 # This submits jobs to SPICE - don't continue until they have all stopped
-sleep 60 # Might not be long enough
+sleep 200 # Might not be long enough
 
 # Make the bias estimates
 R --no-save < Estimate_correction_for_named_ship.R
@@ -53,6 +53,7 @@ R --no-save < Estimate_correction_for_year+deck.R
 # Apply the bias estimates
 R --no-save < make_debiased_imma.R
 
-# Assemble the complete final dataset 1800-1925
+# Assemble the complete final dataset 1800-1870 and 1913-1925
+cp $SCRATCH/ICOADS3+/merged.filled/* $SCRATCH/ICOADS3+/final
 cp $SCRATCH/ICOADS3+/noon.assumptions/* $SCRATCH/ICOADS3+/final
 cp $SCRATCH/ICOADS3+/debiased/* $SCRATCH/ICOADS3+/final

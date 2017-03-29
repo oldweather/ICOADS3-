@@ -2,7 +2,7 @@
 
 peak.no.jobs<-500
 
-for (year in seq(1800,1925)) {
+for (year in seq(1800,1870)) {
   in.system<-system('squeue --user hadpb',intern=TRUE)
   n.new.jobs<-peak.no.jobs-length(in.system)
   while(n.new.jobs<12) {

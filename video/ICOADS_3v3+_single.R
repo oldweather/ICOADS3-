@@ -12,11 +12,15 @@ library(IMMA)
 opt = getopt(matrix(c(
   'year',   'd', 2, "integer",
   'month',  'm', 2, "integer",
-  'day',    'e', 2, "integer"
+  'day',    'e', 2, "integer",
+  'hour',   'h', 2, "integer",
+  'spread', 's', 2, "integer"
 ),ncol=4,byrow=TRUE))
 if ( is.null(opt$year) )   { stop("Year not specified") }
 if ( is.null(opt$month) )  { stop("Month not specified") }
 if ( is.null(opt$day) )    { stop("Day not specified") }
+if ( is.null(opt$hour) )   { stop("Hour not specified") }
+if ( is.null(opt$spread) ) { stop("Spread not specified") }
 
 Imagedir<-sprintf("%s/images/ICOADS3v3p",Sys.getenv('SCRATCH'))
 if(!file.exists(Imagedir)) dir.create(Imagedir,recursive=TRUE)
@@ -63,8 +67,7 @@ ReadObs.cache<-function(file.name,start,end) {
         if(length(colnames(result))==0) {
           result<-result.batch
         } else {
-          cols <- union(colnames(result), colnames(result.batch))
-          result<-rbind(result[,cols], result.batch[,cols])
+          result<-merge(result, result.batch, all=TRUE)
         }
      gc(verbose=FALSE)
   }
@@ -89,8 +92,7 @@ ICOADS.3.0.get.obs<-function(year,month,day,hour,duration) {
     if(length(colnames(result))==0) {
       result<-o
     } else {
-      cols <- union(colnames(result), colnames(o))
-      result<-rbind(result[,cols], o[,cols])
+      result<-merge(result, o, all=TRUE)
     }
   }
   w<-which(result$LON>180)
@@ -114,8 +116,7 @@ ICOADS.3.p.get.obs<-function(year,month,day,hour,duration) {
     if(length(colnames(result))==0) {
       result<-o
     } else {
-      cols <- union(colnames(result), colnames(o))
-      result<-rbind(result[,cols], o[,cols])
+      result<-merge(result, o, all=TRUE)
     }
   }
   w<-which(result$LON>180)
@@ -124,31 +125,25 @@ ICOADS.3.p.get.obs<-function(year,month,day,hour,duration) {
 }
 
 # Functions to find which obs have been replaced/added
-is.replacement<-function(before,after) {
-  w<-which(!is.na(before$LAT) & !is.na(before$LON))
-  before<-before[w,]
-  b.key<-sprintf("%6.2f%7.2f",before$LAT,before$LON)
-  w<-which(!is.na(after$LAT) & !is.na(after$LON))
-  after<-after[w,]
-  a.key<-sprintf("%6.2f%7.2f",after$LAT,after$LON)
-  w<-which(a.key %in% b.key)
-  if(length(w)==length(after$YR)) return(NULL)
-  return(after[-w,])               
+is.replacement<-function(after) {
+  w<-which(!after$has.C98)
+  if(length(w)==0) return(NULL)
+  return(after[w,])               
 }
 has.new.hour<-function(before,after) {
-  w<-which(!is.na(before$LAT) & !is.na(before$LON) &
-           !is.na(before$SLP) & is.na(before$HR)   &
-           before$has.C98     & !is.na(before$UID))
-  if(length(w)==0) return(NULL)
-  before<-before[w,]
   w<-which(!is.na(after$LAT) & !is.na(after$LON) &
            !is.na(after$SLP) & !is.na(after$HR)  &
            after$has.C98     & !is.na(after$UID))
   if(length(w)==0) return(NULL)
   after<-after[w,]
+  w<-which(!is.na(before$LAT) & !is.na(before$LON) &
+           !is.na(before$SLP) & !is.na(before$HR)   &
+           before$has.C98     & !is.na(before$UID))
+  if(length(w)==0) return(after)
+  before<-before[w,]
   w<-which(after$UID %in% before$UID)
-  if(length(w)==0) return(NULL)
-  return(after[w,])               
+  if(length(w)==0) return(after)
+  return(after[-w,])               
 }
 is.bias.corrected<-function(after) {
   w<-which(!is.na(after$SUPD))
@@ -172,14 +167,14 @@ plot.obs.set<-function(obs,colour,Options) {
 }
   
 
-plot.day<-function(year,month,day) {    
+plot.day<-function(year,month,day,hour,duration) {    
 
-    image.name<-sprintf("%04d-%02d-%02d.png",year,month,day)
+    image.name<-sprintf("%04d-%02d-%02d:%02d.png",year,month,day,hour)
     ifile.name<-sprintf("%s/%s",Imagedir,image.name)
     if(file.exists(ifile.name) && file.info(ifile.name)$size>0) return()
 
-    obs.3<-ICOADS.3.0.get.obs(year,month,day,12,72)
-    obs.3p<-ICOADS.3.p.get.obs(year,month,day,12,72)
+    obs.3<-ICOADS.3.0.get.obs(year,month,day,hour,duration)
+    obs.3p<-ICOADS.3.p.get.obs(year,month,day,hour,duration)
    
      png(ifile.name,
              width=1080*16/9,
@@ -193,32 +188,28 @@ plot.day<-function(year,month,day) {
   				     c(Options$lat.min,Options$lat.max),
   				      extension=0))
       WeatherMap.draw.land(land,Options)
-      w<-which(is.na(obs.3$SLP))
-      if(length(w)>0) plot.obs.set(obs.3[w,],rgb(0.65,0.65,0.65),Options)
-      w<-which(!is.na(obs.3$SLP))
-      if(length(w)>0) plot.obs.set(obs.3[w,],rgb(0.3,0.3,0.3),Options)
+      w<-which(is.na(obs.3p$SLP))
+      if(length(w)>0) plot.obs.set(obs.3p[w,],rgb(0.65,0.65,0.65),Options)
+      w<-which(!is.na(obs.3p$SLP))
+      if(length(w)>0) plot.obs.set(obs.3p[w,],rgb(0.3,0.3,0.3),Options)
       debiased<-is.bias.corrected(obs.3p)
-      w<-which(debiased$bias>2)
+      w<-which(debiased$bias>5)
       if(length(w)>0) {
         plot.obs.set(debiased[w,],rgb(1,0,0),Options)
       }             
-      w<-which(debiased$bias>1 & debiased$bias<=1)
+      w<-which(debiased$bias>1 & debiased$bias<=5)
       if(length(w)>0) {
         plot.obs.set(debiased[w,],rgb(0.65,0.35,0.35),Options)
       }             
-      w<-which(debiased$bias< -1 & debiased$bias>= -2)
+      w<-which(debiased$bias< -1 & debiased$bias>= -5)
       if(length(w)>0) {
         plot.obs.set(debiased[w,],rgb(0.35,0.35,0.65),Options)
       }             
-      w<-which(debiased$bias< -2)
+      w<-which(debiased$bias< -5)
       if(length(w)>0) {
         plot.obs.set(debiased[w,],rgb(0,0,1),Options)
       }                     
-      removed<-is.replacement(obs.3p,obs.3)
-      if(!is.null(removed) && length(removed$YR)>0) {
-        plot.obs.set(removed,rgb(0.8,0.8,0.8),Options)
-      }
-      added<-is.replacement(obs.3,obs.3p)
+      added<-is.replacement(obs.3p)
       if(!is.null(added) && length(added$YR)>0) {
         plot.obs.set(added,rgb(1,0.84,0.1),Options)
       }
@@ -233,5 +224,5 @@ plot.day<-function(year,month,day) {
   }
 
 
-plot.day(opt$year,opt$month,opt$day)
+plot.day(opt$year,opt$month,opt$day,opt$hour,opt$spread)
 

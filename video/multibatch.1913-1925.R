@@ -2,7 +2,7 @@
 
 library(lubridate)
 
-current.day<-ymd("1800-01-01")
+current.day<-ymd("1913-01-01")
 end.day<-ymd("1925-12-30")
 
 peak.no.jobs<-500
@@ -24,10 +24,16 @@ while(current.day<=end.day) {
   cat('#SBATCH --ntasks-per-core=2\n')
   cat('#SBATCH --time=10\n')
   # Fast for early years, so several days/job
-  per.job<-max(1,as.integer((1980-year(current.day))/5))
+  per.job<-1
   this.job<-0
   while(this.job<per.job) {
-     cat(sprintf("./ICOADS_3v3+_single.R --year=%d --month=%d --day=%d\n",
+     cat(sprintf("./ICOADS_3v3+_single.R --year=%d --month=%d --day=%d --hour=0 --spread=26\n",
+                 year(current.day),month(current.day),day(current.day)))
+     cat(sprintf("./ICOADS_3v3+_single.R --year=%d --month=%d --day=%d --hour=6 --spread=26\n",
+                 year(current.day),month(current.day),day(current.day)))
+     cat(sprintf("./ICOADS_3v3+_single.R --year=%d --month=%d --day=%d --hour=12 --spread=26\n",
+                 year(current.day),month(current.day),day(current.day)))
+     cat(sprintf("./ICOADS_3v3+_single.R --year=%d --month=%d --day=%d --hour=18 --spread=26\n",
                  year(current.day),month(current.day),day(current.day)))
      current.day<-current.day+days(1)
      this.job<-this.job+1
