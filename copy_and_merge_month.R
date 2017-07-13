@@ -11,11 +11,11 @@ opt = getopt(matrix(c(
 if ( is.null(opt$year  ) )   { stop("Year not specified") }
 if ( is.null(opt$month ) )   { stop("Month not specified") }
 
-decks.to.filter<-c(249)
+decks.to.filter<-c(249,710)
 
 # Find all the obs to be added for this month
-dirs.to.add<-c('oldWeather1')
-decks.to.add<-list(oldWeather1=249)
+dirs.to.add<-c('oldWeather1','oldWeather3')
+decks.to.add<-list(oldWeather1=249,oldWeather3=710)
 to.add<-NULL
 for(dir in dirs.to.add) {
   files.to.add<-list.files(sprintf("%s/ICOADS3+/replacements/%s",
@@ -55,8 +55,7 @@ for(dir in dirs.to.add) {
 # Get the ICOADS3 data for the month
 orig<-ReadObs(sprintf("%s/ICOADS3/IMMA/IMMA1_R3.0.0_%04d-%02d.gz",
                       Sys.getenv('SCRATCH'),opt$year,opt$month))
-
-
+w<-which(orig$DCK %in% decks.to.filter)
 if(length(w)==0 && length(to.add)==0) {
   q('no') # Nothing to do this month
 }
