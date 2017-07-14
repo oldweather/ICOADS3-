@@ -2,9 +2,10 @@
 
 # Calculate the SLP bias for each ob in both R3 and R3+
 R --no-save < multibatch.fo.R
+R --no-save < multibatch.bc.diagnostics.R
 
 # Wait for them to finish and then make the plot.
-
+R --no-save < Check_corrections_by_year.R
 
 # Also comparison scripts 
 
