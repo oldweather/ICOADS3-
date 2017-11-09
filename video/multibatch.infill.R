@@ -2,8 +2,8 @@
 
 library(lubridate)
 
-current.day<-ymd("1800-01-01")
-end.day<-ymd("1949-12-31")
+current.day<-ymd("1662-12-01")
+end.day<-ymd("1799-12-31")
 
 peak.no.jobs<-500
 

@@ -7,11 +7,12 @@ diffs<-numeric(0)
 filter<-numeric(0)
 yr<-numeric(0)
 dck<-numeric(0)
-for(year in seq(1800,1869)) {
+for(year in seq(1662,1869)) {
   for(month in seq(1,12)) {
     rdf<-sprintf("%s/ICOADS3+/bias.checks/%04d.%02d.Rdata",Sys.getenv('SCRATCH'),year,month)
     if(!file.exists(rdf)) next
     obs<-readRDS(rdf)
+    if(length(obs)==0) next
     diffs<-c(diffs,obs$SLP-obs$TWCR.prmsl.norm/100)
     yr<-c(yr,obs$YR)
     dck<-c(dck,obs$DCK)

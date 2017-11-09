@@ -87,6 +87,7 @@ ICOADS.3.0.get.obs<-function(year,month,day,hour,duration) {
                                 as.integer(month(end)))))
   result<-data.frame()
   for(file in files) {
+    if(!file.exists(file)) next
     o<-ReadObs.cache(file,start,end)
     if(length(o$YR)==0) next
     if(length(colnames(result))==0) {
@@ -111,6 +112,7 @@ ICOADS.3.p.get.obs<-function(year,month,day,hour,duration) {
                                 as.integer(month(end)))))
   result<-data.frame()
   for(file in files) {
+    if(!file.exists(file)) next
     o<-ReadObs.cache(file,start,end)
     if(length(o$YR)==0) next
     if(length(colnames(result))==0) {
@@ -188,35 +190,37 @@ plot.day<-function(year,month,day,hour,duration) {
   				     c(Options$lat.min,Options$lat.max),
   				      extension=0))
       WeatherMap.draw.land(land,Options)
-      w<-which(is.na(obs.3p$SLP))
-      if(length(w)>0) plot.obs.set(obs.3p[w,],rgb(0.65,0.65,0.65),Options)
-      w<-which(!is.na(obs.3p$SLP))
-      if(length(w)>0) plot.obs.set(obs.3p[w,],rgb(0.3,0.3,0.3),Options)
-      debiased<-is.bias.corrected(obs.3p)
-      w<-which(debiased$bias>5)
-      if(length(w)>0) {
-        plot.obs.set(debiased[w,],rgb(1,0,0),Options)
-      }             
-      w<-which(debiased$bias>1 & debiased$bias<=5)
-      if(length(w)>0) {
-        plot.obs.set(debiased[w,],rgb(0.65,0.35,0.35),Options)
-      }             
-      w<-which(debiased$bias< -1 & debiased$bias>= -5)
-      if(length(w)>0) {
-        plot.obs.set(debiased[w,],rgb(0.35,0.35,0.65),Options)
-      }             
-      w<-which(debiased$bias< -5)
-      if(length(w)>0) {
-        plot.obs.set(debiased[w,],rgb(0,0,1),Options)
-      }                     
-      added<-is.replacement(obs.3p)
-      if(!is.null(added) && length(added$YR)>0) {
-        plot.obs.set(added,rgb(1,0.84,0.1),Options)
-      }
-      new.hour<-has.new.hour(obs.3,obs.3p)
-      if(!is.null(new.hour) && length(new.hour$YR)>0) {
-        plot.obs.set(new.hour,rgb(1,0.5,0),Options)
-      }
+      if(length(obs.3)>0) {
+          w<-which(is.na(obs.3p$SLP))
+          if(length(w)>0) plot.obs.set(obs.3p[w,],rgb(0.65,0.65,0.65),Options)
+          w<-which(!is.na(obs.3p$SLP))
+          if(length(w)>0) plot.obs.set(obs.3p[w,],rgb(0.3,0.3,0.3),Options)
+          debiased<-is.bias.corrected(obs.3p)
+          w<-which(debiased$bias>5)
+          if(length(w)>0) {
+            plot.obs.set(debiased[w,],rgb(1,0,0),Options)
+          }             
+          w<-which(debiased$bias>1 & debiased$bias<=5)
+          if(length(w)>0) {
+            plot.obs.set(debiased[w,],rgb(0.65,0.35,0.35),Options)
+          }             
+          w<-which(debiased$bias< -1 & debiased$bias>= -5)
+          if(length(w)>0) {
+            plot.obs.set(debiased[w,],rgb(0.35,0.35,0.65),Options)
+          }             
+          w<-which(debiased$bias< -5)
+          if(length(w)>0) {
+            plot.obs.set(debiased[w,],rgb(0,0,1),Options)
+          }                     
+          added<-is.replacement(obs.3p)
+          if(!is.null(added) && length(added$YR)>0) {
+            plot.obs.set(added,rgb(1,0.84,0.1),Options)
+          }
+          new.hour<-has.new.hour(obs.3,obs.3p)
+          if(!is.null(new.hour) && length(new.hour$YR)>0) {
+            plot.obs.set(new.hour,rgb(1,0.5,0),Options)
+          }
+        }
      Options<-WeatherMap.set.option(Options,'land.colour',rgb(100,100,100,255,
                                                            maxColorValue=255))
       WeatherMap.draw.label(Options)

@@ -20,6 +20,7 @@ GetOptions(
 
 my $Imma_file=sprintf("%s/ICOADS3+/merged.filled/IMMA1_R3.0.0_%04d-%02d.gz",
                       $ENV{'SCRATCH'},$Year,$Month);
+unless( -r $Imma_file) { die "No data in $Imma_file"; }
 open(DIN, "gunzip -c $Imma_file |") || die "can’t open pipe to $Imma_file";
 
 my $OP_file=sprintf("%s/ICOADS3+/noon.assumptions/IMMA1_R3.0.0_%04d-%02d.gz",

@@ -21,8 +21,10 @@ n.total<-days_in_month(ymd(sprintf("%04d-%02d-01",year,month)))*24
 datadir<-Sys.getenv('SCRATCH')
 
 # load the R3 obs
-o<-ReadObs(sprintf("%s/ICOADS3+/noon.assumptions/IMMA1_R3.0.0_%04d-%02d.gz",
-                   datadir,year,month))
+old.file<-sprintf("%s/ICOADS3+/noon.assumptions/IMMA1_R3.0.0_%04d-%02d.gz",
+                   datadir,year,month)
+if(!file.exists(old.file)) stop(sprintf("No data for %d-%d",year,month))
+o<-ReadObs(old.file)
 
 # Add the pressure comparisons for a selected hour
 compare<-function(n.hour) {

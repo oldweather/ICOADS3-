@@ -5,7 +5,7 @@ library(IMMA)
 bias.ship<-readRDS(sprintf("%s/ICOADS3+/bias.checks/bias.ship.Rdata",Sys.getenv('SCRATCH')))
 bias.year<-readRDS(sprintf("%s/ICOADS3+/bias.checks/bias.year.deck.Rdata",Sys.getenv('SCRATCH')))
 
-for(year in seq(1800,1869,1)) {
+for(year in seq(1662,1869,1)) {
   for(month in seq(1,12)) {
     i.file<-sprintf("%s/ICOADS3+/noon.assumptions/IMMA1_R3.0.0_%04d-%02d.gz",
                         Sys.getenv('SCRATCH'),year,month)
