@@ -11,11 +11,11 @@ opt = getopt(matrix(c(
 if ( is.null(opt$year  ) )   { stop("Year not specified") }
 if ( is.null(opt$month ) )   { stop("Month not specified") }
 
-decks.to.filter<-c(249,710)
+decks.to.filter<-c(249,710,246)
 
 # Find all the obs to be added for this month
-dirs.to.add<-c('oldWeather1','oldWeather3')
-decks.to.add<-list(oldWeather1=249,oldWeather3=710)
+dirs.to.add<-c('oldWeather1','oldWeather3','Expeditions')
+decks.to.add<-list(oldWeather1=249,oldWeather3=710,Expeditions=246)
 to.add<-NULL
 for(dir in dirs.to.add) {
   files.to.add<-list.files(sprintf("%s/ICOADS3+/replacements/%s",
