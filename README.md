@@ -16,5 +16,6 @@ Decks to replace are:
 
 1. oldWeather 1/2 - RN WW1 obs: ICOADS3 deck 249, replacement data from https://github.com/oldweather/oldWeather1
 2. oldWeather 3 - US Arctic obs obs: ICOADS3 deck 710, replacement data from https://github.com/oldweather/oldWeather3
+3. [Marine expeditions records](https://oldweather.github.io/Expeditions/): ICOADS3 deck 246, replacement data from https://github.com/oldweather/Expeditions
 
 For diagnostics see [diagnostics.sh](disgnostics.sh)
